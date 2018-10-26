@@ -11,27 +11,6 @@ from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
 
 
-
-class DEXSReport():
-    """ A new, interactive DEXSeq table.
-    """
-    def __init__(self):
-        self.rows = []
-
-    def add_row(self, row):
-        self.rows.append(row)
-        return 0
-
-    def row_to_HTML(self, row, header=False):
-        """ Convert row, a list, to an HTML <tr> element.
-        """
-        tr = '<tr>'
-        dtype = 'th' if header else 'td'
-        for d in row:
-            tr = '<{}>{}</{}>'.format(dtype, d, dtype)
-        return tr + '</tr>\n'
-
-
 def main():
     rows = []
     with open(sys.argv[2]) as infile:
@@ -47,6 +26,8 @@ def main():
     j2_env = Environment(loader=FileSystemLoader(sys.argv[1]), trim_blocks=True)
     html_rendered =j2_env.get_template('template.html').render(rows=rows)
     print(html_rendered)
+    with open('transform.html', 'w') as outfile:
+        outfile.write(html_rendered)
     #with open(sys.argv[1]) as infile:
      #   soup = BeautifulSoup(infile)
     #deu_table = soup.findAll("table", {"class": "table-layout:fixed"})
