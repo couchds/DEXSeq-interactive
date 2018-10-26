@@ -14,6 +14,21 @@
 
 
 <h3>Data Filter</h3>
+<p style="font-size: 18px">The Data Filter function works by applying three conditions to the data table. You can limit the data to show only the exons satisfying the three following conditions.</p>
+
+<p style="font-size: 22px; font-color: green">Note - application is currently bugged! To apply the filter, you have to click a header of the data table!</p>
+
+
+<div>
+<label>Min. # Exons</label>
+<input type="text" id="num-val-min" />
+</div>
+<div>
+<label>Max. # Exons</label>
+<input type="text" id="num-val-max"/>
+</div>
+<b>AND</b>
+
 <div>
 <label>Min. Exon Count</label>
 <input type="text" id="count-val-min" />
@@ -22,7 +37,16 @@
 <label>Max. Exon Count</label>
 <input type="text" id="count-val-max"/>
 </div>
+<b>AND</b>
 
+<div>
+<label>Min. Proportion of Exons Counted</label>
+<input type="text" id="prop-val-min" />
+</div>
+<div>
+<label>Max. Proportion of Exons Counted</label>
+<input type="text" id="prop-val-max"/>
+</div>
 
 
 <table id="DEXSeq-table" class="table table-striped table-bordered" style="width:100%">
@@ -46,26 +70,49 @@
 <script>
 $(document).ready(function() {
     $('#DEXSeq-table').DataTable( {
-        "order": [[ 5, "desc" ]]
+        "dom": 'Bfrtip',
+        "order": [[ 5, "desc" ]],
+        "buttons": [
+                    'copy', 'csv', 'excel'
+                            ]
+
     } );
 
 	 $('#count-val-min, #count-val-max').keyup( function() {
         table.draw();
     } );
 
-
+    // generalize this at some point, quick dumb implementation
 	$.fn.dataTable.ext.search.push(
     function( settings, data, dataIndex ) {
         var count_min = parseInt($('#count-val-min').val());
         var count_max = parseInt($('#count-val-max').val());
-        var degree = parseInt(data[5]);
+        var count = parseInt(data[5]);
+
+
+        var num_min= parseInt($('#num-val-min').val());
+        var num_max = parseInt($('#num-val-max').val());
+        var num = parseInt(data[4]);
+
+        var prop_min = parseFloat($('#prop-val-min').val());
+        var prop_max = parseFloat($('#prop-val-max').val());
+        var prop = parseFloat(data[6]);
 
         if ( ( isNaN( count_min ) && isNaN( count_max ) ) ||
-             ( isNaN( count_min) && degree <= count_max ) ||
-             ( count_min <= degree   && isNaN( count_max) ) ||
-             ( count_min <= degree && degree <= count_max) )
+             ( isNaN( count_min) && count <= count_max ) ||
+             ( count_min <= count && isNaN( count_max) ) ||
+             ( count_min <= count && count <= count_max) )
         {
-            return true;
+            if ( ( isNaN( num_min ) && isNaN( num_max ) ) ||
+             ( isNaN( num_min) && num <= num_max ) ||
+             ( num_min <= num   && isNaN( num_max) ) ||
+             ( num_min <= num && num <= num_max) )
+            {
+                if ( ( isNaN( prop_min ) && isNaN( prop_max ) ) ||
+             ( isNaN( prop_min) && prop <= prop_max ) ||
+             ( prop_min <= prop   && isNaN( prop_max) ) ||
+             ( prop_min <= prop && prop <= prop_max) ) return true;
+            }
         }
         return false;
     });
