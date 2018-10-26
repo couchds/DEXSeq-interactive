@@ -23,7 +23,7 @@ def main():
             td = tr.findAll('td')
             #print(td[0].find('a').text)
             geneids = td[0].find('a').text.split(' ')
-            rows.append([geneids, td[1].text, td[2].text, td[3].text, td[4].text, td[5].text])
+            rows.append([geneids, td[1].text, td[2].text, td[3].text, td[4].text, td[5].text, str(float(td[5].text)/float(td[4].text))])
     j2_env = Environment(loader=FileSystemLoader(sys.argv[1]), trim_blocks=True)
     html_rendered =j2_env.get_template('template.html').render(rows=rows)
     #print(html_rendered)
