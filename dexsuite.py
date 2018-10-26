@@ -22,11 +22,14 @@ def main():
         else:
             td = tr.findAll('td')
             #print(td[0].find('a').text)
-            rows.append([td[0].find('a').text, td[1].text, td[2].text, td[3].text, td[4].text, td[5].text])
+            geneids = td[0].find('a').text.split(' ')
+            rows.append([geneids, td[1].text, td[2].text, td[3].text, td[4].text, td[5].text])
     j2_env = Environment(loader=FileSystemLoader(sys.argv[1]), trim_blocks=True)
     html_rendered =j2_env.get_template('template.html').render(rows=rows)
-    print(html_rendered)
-    with open('transform.html', 'w') as outfile:
+    #print(html_rendered)
+    basepath = os.path.dirname(sys.argv[2])
+    print(basepath)
+    with open(os.path.join(basepath, 'transform.html'), 'w') as outfile:
         outfile.write(html_rendered)
     #with open(sys.argv[1]) as infile:
      #   soup = BeautifulSoup(infile)

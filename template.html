@@ -9,13 +9,33 @@
 
 </head>
 <body>
-<h2>DEXSuite Report</h2>
+<div class="container">
+<h2 class="header"><u>DEXSuite Report</u></h2>
+
+
+<h3>Data Filter</h3>
+<div>
+<label>Min. Exon Count</label>
+<input type="text" id="count-val-min" />
+</div>
+<div>
+<label>Max. Exon Count</label>
+<input type="text" id="count-val-max"/>
+</div>
+
+
+
 <table id="DEXSeq-table" class="table table-striped table-bordered" style="width:100%">
 {% block table %}
   <thead><tr><th>GeneID</th><th>Chr</th><th>Start</th><th>Stop</th><th># Exons</th><th># Exon changes</th></tr></thead>
   <tbody>
   {% for row in rows %}
-    <tr><td>{{ row[0] }}</td><td>{{ row[1] }}</td><td>{{ row[2] }}</td><td>{{ row[3] }}</td>
+    <tr>
+    <td>
+    {% for gene in row[0] %}
+      <a href="files/{{ gene }}expression.html">{{ gene }}</a> 
+    {% endfor %}
+    <td>{{ row[1] }}</td><td>{{ row[2] }}</td><td>{{ row[3] }}</td>
     <td>{{ row[4] }}</td><td>{{ row[5] }}</td></tr>
   {% endfor %}
   </tbody>
@@ -25,10 +45,32 @@
 </html>
 <script>
 $(document).ready(function() {
-    console.log('here');
     $('#DEXSeq-table').DataTable( {
         "order": [[ 5, "desc" ]]
     } );
+
+	 $('#count-val-min, #count-val-max').keyup( function() {
+        table.draw();
+    } );
+
+
+	$.fn.dataTable.ext.search.push(
+    function( settings, data, dataIndex ) {
+        var count_min = parseInt($('#count-val-min').val());
+        var count_max = parseInt($('#count-val-max').val());
+        var degree = parseInt(data[5]);
+
+        if ( ( isNaN( count_min ) && isNaN( count_max ) ) ||
+             ( isNaN( count_min) && degree <= count_max ) ||
+             ( count_min <= degree   && isNaN( count_max) ) ||
+             ( count_min <= degree && degree <= count_max) )
+        {
+            return true;
+        }
+        return false;
+    });
+
+
 } );
 
 </script>
