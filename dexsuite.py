@@ -33,14 +33,20 @@ class DEXSReport():
 
 
 def main():
+    rows = []
     with open(sys.argv[2]) as infile:
         soup = BeautifulSoup(infile)
-    for row in soup.find("table", {"class": "table-layout:fixed"}).findChildren('tr'):
-        print(row)
+    i = 0
+    for tr in soup.find("table", {"class": "table-layout:fixed"}).findChildren('tr'):
+        if i == 0:
+            i=1
+        else:
+            td = tr.findAll('td')
+            #print(td[0].find('a').text)
+            rows.append([td[0].find('a').text, td[1].text, td[2].text, td[3].text, td[4].text, td[5].text])
     j2_env = Environment(loader=FileSystemLoader(sys.argv[1]), trim_blocks=True)
-#    print(j2_env.get_template('template.html').render(
-#            rows=[[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]
-#                ))
+    html_rendered =j2_env.get_template('template.html').render(rows=rows)
+    print(html_rendered)
     #with open(sys.argv[1]) as infile:
      #   soup = BeautifulSoup(infile)
     #deu_table = soup.findAll("table", {"class": "table-layout:fixed"})
